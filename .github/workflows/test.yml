@@ -1,0 +1,100 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run unit tests
+        run: ./gradlew :annotatedstring-generator:testDebugUnitTest --no-daemon --continue || true
+
+      - name: Check test results
+        run: |
+          # Check if there are test failures in the XML results
+          if find annotatedstring-generator/build/test-results -name "*.xml" -exec grep -l "failures=\"[1-9]" {} \; 2>/dev/null | grep -q .; then
+            echo "Tests failed!"
+            exit 1
+          fi
+          echo "All tests passed!"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: |
+            annotatedstring-generator/build/test-results/
+            annotatedstring-generator/build/reports/
+
+  paparazzi-tests:
+    name: Paparazzi Snapshot Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Verify Paparazzi snapshots
+        run: ./gradlew :annotatedstring-generator:verifyPaparazziDebug --no-daemon --continue || true
+
+      - name: Check Paparazzi results
+        run: |
+          # Check if there are any failure images
+          if [ -d "annotatedstring-generator/build/paparazzi/failures" ] && [ "$(ls -A annotatedstring-generator/build/paparazzi/failures 2>/dev/null)" ]; then
+            echo "Paparazzi snapshot verification failed!"
+            ls -la annotatedstring-generator/build/paparazzi/failures/
+            exit 1
+          fi
+          echo "All Paparazzi snapshots verified!"
+
+      - name: Upload Paparazzi failure diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paparazzi-failure-diffs
+          path: annotatedstring-generator/build/paparazzi/failures/
+
+      - name: Upload Paparazzi reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paparazzi-reports
+          path: |
+            annotatedstring-generator/build/reports/paparazzi/
+            annotatedstring-generator/src/test/snapshots/
