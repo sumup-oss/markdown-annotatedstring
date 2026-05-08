@@ -11,6 +11,7 @@ markdown = "0.7.3"
 composeUi = "1.10.2"
 paparazzi = "2.0.0-alpha04"
 truth = "1.4.4"
+mavenPublish = "0.34.0"
 
 [libraries]
 intellij-markdown = { group = "org.jetbrains", name = "markdown", version.ref = "markdown" }
@@ -30,4 +31,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 
