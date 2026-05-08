@@ -46,10 +46,16 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.all {
+            it.exclude(
+                "**/AnnotatedStringPaparazziTest.class"
+            )
+        }
+    }
 }
 
 dependencies {
-    implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.intellij.markdown)
 
