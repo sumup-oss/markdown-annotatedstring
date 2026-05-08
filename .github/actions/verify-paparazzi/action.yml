@@ -1,0 +1,36 @@
+name: Verify Paparazzi Snapshots
+description: Runs Paparazzi snapshot verification for the annotatedstring-generator module and uploads failure diffs as artifacts.
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '17'
+        cache: gradle
+
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Verify snapshots
+      shell: bash
+      run: ./gradlew --no-daemon :annotatedstring-generator:verifyPaparazziDebug
+
+    - name: Upload snapshot diffs on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: paparazzi-failure-diffs
+        path: annotatedstring-generator/build/paparazzi/failures/
+        if-no-files-found: ignore
+
+    - name: Upload Paparazzi report on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: paparazzi-report
+        path: annotatedstring-generator/build/reports/paparazzi/
+        if-no-files-found: ignore
+
