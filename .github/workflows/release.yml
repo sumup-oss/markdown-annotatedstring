@@ -60,7 +60,16 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Publish artifacts
+      - name: Read version from gradle.properties
+        id: version
+        run: echo "VERSION_NAME=$(grep '^VERSION_NAME=' gradle.properties | cut -d'=' -f2)" >> "$GITHUB_ENV"
+
+      - name: Publish snapshot to Maven Central snapshots
+        if: contains(github.event.release.tag_name || '', 'SNAPSHOT') || (github.event_name == 'workflow_dispatch' && contains(env.VERSION_NAME, 'SNAPSHOT'))
+        run: ./gradlew --no-daemon :annotatedstring-generator:publishAllPublicationsToMavenCentralRepository
+
+      - name: Publish release to Maven Central
+        if: "!(contains(github.event.release.tag_name || '', 'SNAPSHOT') || (github.event_name == 'workflow_dispatch' && contains(env.VERSION_NAME, 'SNAPSHOT')))"
         run: ./gradlew --no-daemon :annotatedstring-generator:publishAndReleaseToMavenCentral
 
 
