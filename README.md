@@ -1,8 +1,9 @@
 # Markdown to AnnotatedString Generator
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/sumup-oss/markdown-annotatedstring/test.yml?branch=main)](https://github.com/sumup-oss/markdown-annotatedstring/actions/workflows/test.yml)
+[![Build Status](https://github.com/sumup-oss/markdown-annotatedstring/actions/workflows/build-verification.yml/badge.svg?branch=main)](https://github.com/sumup-oss/markdown-annotatedstring/actions/workflows/build-verification.yml)
 [![Release](https://img.shields.io/github/v/release/sumup-oss/markdown-annotatedstring)](https://github.com/sumup-oss/markdown-annotatedstring/releases)
-[![License](https://img.shields.io/github/license/sumup-oss/markdown-annotatedstring)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
+
 
 A lightweight Android library to convert Markdown text into a Jetpack Compose `AnnotatedString`. This allows you to easily render formatted text from Markdown in your Compose UI.
 
@@ -24,7 +25,7 @@ Add the dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.sumup.markdown:annotatedstring-generator:0.1.0-SNAPSHOT")
+    implementation("com.sumup.markdown:annotatedstring-generator:0.1.0")
 }
 ```
 
@@ -33,24 +34,38 @@ dependencies {
 
 ```groovy
 dependencies {
-    implementation 'com.sumup.markdown:annotatedstring-generator:0.1.0-SNAPSHOT'
+    implementation 'com.sumup.markdown:annotatedstring-generator:0.1.0'
 }
 ```
 </details>
 
-For **snapshot** versions, make sure Maven Central snapshots repository is added in your `settings.gradle.kts`:
+<!-- For snapshot versions, add the Maven Central snapshots repository in your settings.gradle.kts:
+     maven("https://central.sonatype.com/repository/maven-snapshots/")
+     and use version "0.1.0-SNAPSHOT" instead. -->
+
+<details>
+<summary>Snapshot versions</summary>
+
+To use a **snapshot** version (e.g., `0.1.0-SNAPSHOT`), add the Maven Central snapshots repository in your `settings.gradle.kts`:
 
 ```kotlin
 dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven("https://central.sonatype.com/repository/maven-snapshots/") // for SNAPSHOT versions
+        maven("https://central.sonatype.com/repository/maven-snapshots/")
     }
 }
 ```
 
-> **Note:** Once a stable release is published, you won't need the snapshot repository — just `mavenCentral()`.
+Then use the snapshot version in your dependency:
+
+```kotlin
+dependencies {
+    implementation("com.sumup.markdown:annotatedstring-generator:0.1.0-SNAPSHOT")
+}
+```
+</details>
 
 ## Usage
 
