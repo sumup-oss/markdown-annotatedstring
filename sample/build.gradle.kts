@@ -1,14 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    namespace = "com.sumup.markdown.annotatedstring"
+    namespace = "com.sumup.markdown.annotatedstring.sample"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.sumup.markdown.annotatedstring"
+        applicationId = "com.sumup.markdown.annotatedstring.sample"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -30,15 +31,28 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
+    implementation(project(":annotatedstring-generator"))
+
+//    implementation(libs.sumup.markdown.annotatedstring.snapshot) // for SNAPSHOT versions testing
+
+    implementation(libs.intellij.markdown)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(project(":annotatedstring-generator"))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.material3)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
+
