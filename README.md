@@ -3,6 +3,7 @@
 [![Build Status](https://github.com/sumup-oss/markdown-annotatedstring/actions/workflows/build-verification.yml/badge.svg?branch=main)](https://github.com/sumup-oss/markdown-annotatedstring/actions/workflows/build-verification.yml)
 [![Release](https://img.shields.io/github/v/release/sumup-oss/markdown-annotatedstring)](https://github.com/sumup-oss/markdown-annotatedstring/releases)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
+[![Maven Central](https://img.shields.io/maven-central/v/com.sumup.markdown/annotatedstring-generator)](https://central.sonatype.com/artifact/com.sumup.markdown/annotatedstring-generator)
 
 
 A lightweight Android library to convert Markdown text into a Jetpack Compose `AnnotatedString`. This allows you to easily render formatted text from Markdown in your Compose UI.
