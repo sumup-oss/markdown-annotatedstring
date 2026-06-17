@@ -26,7 +26,7 @@ class AnnotatedStringGeneratorTest {
     @Test
     fun `plain text is rendered correctly`() {
         val result = generateAnnotatedString("Hello World")
-        assertThat(result.text).isEqualTo("Hello World\n")
+        assertThat(result.text).isEqualTo("Hello World")
     }
 
     @Test
