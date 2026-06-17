@@ -197,10 +197,26 @@ public class CommonMarkFlavourDescriptor : MarkdownFlavourAnnotatedStringDescrip
 
     private fun createMarkdownFileProvider() = object : AnnotatedStringGeneratingProvider {
         override fun processNode(visitor: AnnotatedStringRecursiveVisitor, markdown: String, node: org.intellij.markdown.ast.ASTNode) {
+            var seenFirstBlock = false
             node.children.forEach { child ->
-                child.accept(visitor)
                 if (isBlockElement(child.type)) {
-                    visitor.builder.append("\n")
+                    if (seenFirstBlock) {
+                        // Normalize the spacing before each block (except the first) to
+                        // exactly one blank line. Any EOL tokens from the previous block
+                        // have already been written, so we just top up whatever's missing.
+                        val current = visitor.builder.toAnnotatedString().text
+                        when {
+                            current.isEmpty() || current.endsWith("\n\n") -> { /* fine */
+                            }
+
+                            current.endsWith("\n") -> visitor.builder.append("\n")
+                            else -> visitor.builder.append("\n\n")
+                        }
+                    }
+                    child.accept(visitor)
+                    seenFirstBlock = true
+                } else {
+                    child.accept(visitor)
                 }
             }
         }
@@ -321,30 +337,43 @@ public class CommonMarkFlavourDescriptor : MarkdownFlavourAnnotatedStringDescrip
 
     private fun createOrderedListProvider() = object : AnnotatedStringGeneratingProvider {
         override fun processNode(visitor: AnnotatedStringRecursiveVisitor, markdown: String, node: org.intellij.markdown.ast.ASTNode) {
-            node.children.forEach { listItemNode ->
-                if (listItemNode.type == MarkdownElementTypes.LIST_ITEM) {
-                    listItemNode.accept(visitor)
-                    if (node.children.last() != listItemNode) {
-                        visitor.builder.append("\n")
-                    }
-                } else {
-                    listItemNode.accept(visitor)
-                }
-            }
+            appendListItems(visitor, node)
         }
     }
 
     private fun createUnorderedListProvider() = object : AnnotatedStringGeneratingProvider {
         override fun processNode(visitor: AnnotatedStringRecursiveVisitor, markdown: String, node: org.intellij.markdown.ast.ASTNode) {
-            node.children.forEach { listItemNode ->
-                if (listItemNode.type == MarkdownElementTypes.LIST_ITEM) {
-                    listItemNode.accept(visitor)
-                    if (node.children.last() != listItemNode) {
-                        visitor.builder.append("\n")
-                    }
-                } else {
-                    listItemNode.accept(visitor)
+            appendListItems(visitor, node)
+        }
+    }
+
+    /**
+     * Renders list items so they sit on consecutive lines (no blank line between
+     * them). The parser emits `EOL` / `WHITE_SPACE` tokens between sibling list
+     * items at the list level – we skip those structural tokens and instead
+     * top up to exactly one trailing newline between items ourselves, with no
+     * separator after the final item.
+     */
+    private fun appendListItems(visitor: AnnotatedStringRecursiveVisitor, node: org.intellij.markdown.ast.ASTNode) {
+        val items = node.children.filter { it.type == MarkdownElementTypes.LIST_ITEM }
+        node.children.forEach { child ->
+            when (child.type) {
+                MarkdownTokenTypes.EOL,
+                MarkdownTokenTypes.WHITE_SPACE -> {
+                    // Skip – we control inter-item spacing manually.
                 }
+
+                MarkdownElementTypes.LIST_ITEM -> {
+                    child.accept(visitor)
+                    if (child != items.last()) {
+                        val current = visitor.builder.toAnnotatedString().text
+                        if (!current.endsWith("\n")) {
+                            visitor.builder.append("\n")
+                        }
+                    }
+                }
+
+                else -> child.accept(visitor)
             }
         }
     }
