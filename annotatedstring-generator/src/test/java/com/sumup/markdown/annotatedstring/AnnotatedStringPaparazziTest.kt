@@ -223,6 +223,19 @@ class AnnotatedStringPaparazziTest {
         }
     }
 
+    @Test
+    fun blockQuoteWithLazyContinuation() {
+        paparazzi.snapshot {
+            MarkdownPreview(
+                """
+                > This is a block quote.
+                > It can span multiple lines.
+                not a quote
+                """.trimIndent()
+            )
+        }
+    }
+
     // ===================
     // Horizontal Rule Tests
     // ===================
