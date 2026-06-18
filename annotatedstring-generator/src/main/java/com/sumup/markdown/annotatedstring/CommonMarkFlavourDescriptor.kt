@@ -141,8 +141,11 @@ public class CommonMarkFlavourDescriptor : MarkdownFlavourAnnotatedStringDescrip
             MarkdownTokenTypes.CODE_FENCE_END to createTextTokenProvider(),
             MarkdownTokenTypes.CODE_LINE to createTextTokenProvider(),
 
-            // Block quote tokens (usually skipped by BLOCK_QUOTE element)
-            MarkdownTokenTypes.BLOCK_QUOTE to createTextTokenProvider(),
+            // BLOCK_QUOTE tokens are the ">" marker characters themselves. They are
+            // structural markers — never rendered as text, regardless of where they
+            // appear in the AST (top-level block quote children OR nested inside a
+            // paragraph for continuation lines).
+            MarkdownTokenTypes.BLOCK_QUOTE to NoOpProvider,
 
             // Link tokens (usually processed by INLINE_LINK element)
             MarkdownTokenTypes.LINK_TITLE to createTextTokenProvider(),
@@ -165,6 +168,13 @@ public class CommonMarkFlavourDescriptor : MarkdownFlavourAnnotatedStringDescrip
     private fun createTextTokenProvider() = object : AnnotatedStringGeneratingProvider {
         override fun processNode(visitor: AnnotatedStringRecursiveVisitor, markdown: String, node: org.intellij.markdown.ast.ASTNode) {
             visitor.builder.append(node.getTextInNode(markdown).toString())
+        }
+    }
+
+    /** Provider that produces no output. Use for structural tokens that should never be rendered. */
+    private object NoOpProvider : AnnotatedStringGeneratingProvider {
+        override fun processNode(visitor: AnnotatedStringRecursiveVisitor, markdown: String, node: org.intellij.markdown.ast.ASTNode) {
+            // Intentionally empty
         }
     }
 
@@ -436,19 +446,79 @@ public class CommonMarkFlavourDescriptor : MarkdownFlavourAnnotatedStringDescrip
     }
 
     private fun createBlockQuoteProvider() = object : AnnotatedStringGeneratingProvider {
+        private val quoteStyle = SpanStyle(color = Color.Gray, fontStyle = FontStyle.Italic)
+
         override fun processNode(visitor: AnnotatedStringRecursiveVisitor, markdown: String, node: org.intellij.markdown.ast.ASTNode) {
-            visitor.builder.withStyle(SpanStyle(color = Color.Gray, fontStyle = FontStyle.Italic)) {
-                // Skip block quote markers (>) and only process content
-                node.children.forEach { child ->
-                    if (child.type != MarkdownTokenTypes.BLOCK_QUOTE) {
-                        child.accept(visitor)
-                        if (isBlockElement(child.type)) {
-                            visitor.builder.append("\n")
-                        }
-                    }
+            // Pre-compute which source line indices are real quoted lines (start with ">").
+            // Lazy-continuation lines (no ">") are included in the BLOCK_QUOTE AST node by
+            // CommonMark but should NOT receive quote styling.
+            val quotedLines = computeQuotedLines(markdown, node)
+
+            node.children.forEach { child ->
+                if (child.type == MarkdownTokenTypes.BLOCK_QUOTE) return@forEach
+                renderWithLineAwareStyle(visitor, markdown, child, quotedLines)
+                if (isBlockElement(child.type)) {
+                    visitor.builder.append("\n")
                 }
             }
         }
+
+        private fun computeQuotedLines(markdown: String, node: org.intellij.markdown.ast.ASTNode): Set<Int> {
+            val startLine = lineNumberAt(markdown, node.startOffset)
+            val endLine = lineNumberAt(markdown, node.endOffset)
+            val sourceLines = markdown.lines()
+            return (startLine..endLine.coerceAtMost(sourceLines.lastIndex))
+                .filter { sourceLines[it].trimStart().startsWith(">") }
+                .toSet()
+        }
+
+        private fun renderWithLineAwareStyle(
+            visitor: AnnotatedStringRecursiveVisitor,
+            markdown: String,
+            node: org.intellij.markdown.ast.ASTNode,
+            quotedLines: Set<Int>
+        ) {
+            val startLine = lineNumberAt(markdown, node.startOffset)
+            val endLine = lineNumberAt(markdown, node.endOffset)
+            val lineRange = startLine..endLine
+            val allQuoted = lineRange.all { it in quotedLines }
+            val noneQuoted = lineRange.none { it in quotedLines }
+
+            when {
+                allQuoted -> visitor.builder.withStyle(quoteStyle) { node.accept(visitor) }
+                noneQuoted -> node.accept(visitor)
+                node.children.isEmpty() -> splitLeafByLine(visitor, markdown, node, quotedLines)
+                else -> node.children.forEach {
+                    if (it.type == MarkdownTokenTypes.BLOCK_QUOTE) return@forEach
+                    renderWithLineAwareStyle(visitor, markdown, it, quotedLines)
+                }
+            }
+        }
+
+        /** Splits a leaf node's source text by line, applying quote style only to quoted lines. */
+        private fun splitLeafByLine(
+            visitor: AnnotatedStringRecursiveVisitor,
+            markdown: String,
+            node: org.intellij.markdown.ast.ASTNode,
+            quotedLines: Set<Int>
+        ) {
+            val startLine = lineNumberAt(markdown, node.startOffset)
+            val lines = markdown.substring(node.startOffset, node.endOffset).split("\n")
+            lines.forEachIndexed { index, line ->
+                val lineNum = startLine + index
+                if (lineNum in quotedLines) {
+                    // Strip leading ">" marker (and optional space) before applying style
+                    val content = line.replace(Regex("^\\s*>\\s?"), "")
+                    visitor.builder.withStyle(quoteStyle) { visitor.builder.append(content) }
+                } else {
+                    visitor.builder.append(line)
+                }
+                if (index < lines.lastIndex) visitor.builder.append("\n")
+            }
+        }
+
+        private fun lineNumberAt(markdown: String, offset: Int): Int =
+            markdown.substring(0, offset).count { it == '\n' }
     }
 
     private fun createHorizontalRuleProvider() = object : AnnotatedStringGeneratingProvider {
