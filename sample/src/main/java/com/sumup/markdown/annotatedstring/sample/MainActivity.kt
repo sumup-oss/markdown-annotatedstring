@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sumup.markdown.annotatedstring.AnnotatedStringGenerator
 import com.sumup.markdown.annotatedstring.CommonMarkFlavourDescriptor
@@ -82,9 +83,10 @@ fun greet(name: String): String {
 
 > This is a block quote.
 > It can span multiple lines.
-
+not a quote
 ---
-
+x
+___
 That's it! Edit the markdown above to try it out.
 """.trimIndent()
 
@@ -151,6 +153,19 @@ private fun renderMarkdown(markdown: String): AnnotatedString {
         AnnotatedStringGenerator(markdown, root, flavour).generateAnnotatedString()
     } catch (e: Exception) {
         AnnotatedString("Error parsing markdown: ${e.message}")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MarkdownPlaygroundPreview() {
+    MaterialTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            MarkdownPlayground()
+        }
     }
 }
 

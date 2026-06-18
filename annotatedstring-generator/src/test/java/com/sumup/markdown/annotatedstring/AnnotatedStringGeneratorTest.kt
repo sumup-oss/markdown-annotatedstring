@@ -385,6 +385,34 @@ class AnnotatedStringGeneratorTest {
         val result = generateAnnotatedString("> Quote line 1\n> Quote line 2")
         assertThat(result.text).contains("Quote line 1")
         assertThat(result.text).contains("Quote line 2")
+        // The ">" chevron markers should not appear in the rendered text
+        assertThat(result.text).doesNotContain(">")
+    }
+
+    @Test
+    fun `blockquote followed by non-quoted text does not contain chevron`() {
+        val result = generateAnnotatedString("> This is a block quote.\n> It can span multiple lines.\nlkjlkjblckvj")
+        assertThat(result.text).contains("This is a block quote.")
+        assertThat(result.text).contains("It can span multiple lines.")
+        assertThat(result.text).contains("lkjlkjblckvj")
+        // No ">" chevron should appear in rendered output
+        assertThat(result.text).doesNotContain(">")
+    }
+
+    @Test
+    fun `blockquote lazy continuation should not be styled as quote`() {
+        val result = generateAnnotatedString("> This is a quote\nnot a quote")
+        assertThat(result.text).contains("This is a quote")
+        assertThat(result.text).contains("not a quote")
+        // "not a quote" should not have italic style (quote style)
+        val quoteSpans = result.spanStyles.filter {
+            it.item.fontStyle == FontStyle.Italic
+        }
+        // The italic style should only cover "This is a quote", not "not a quote"
+        val notAQuoteIndex = result.text.indexOf("not a quote")
+        quoteSpans.forEach { span ->
+            assertThat(span.end).isAtMost(notAQuoteIndex)
+        }
     }
 
     @Test

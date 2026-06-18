@@ -38,6 +38,7 @@ android {
 
 dependencies {
     implementation(project(":annotatedstring-generator"))
+    implementation(libs.androidx.compose.ui.tooling.preview)
 
 //    implementation(libs.sumup.markdown.annotatedstring.snapshot) // for SNAPSHOT versions testing
 
@@ -54,5 +55,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }
 
