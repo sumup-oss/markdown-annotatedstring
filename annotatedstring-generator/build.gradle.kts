@@ -46,6 +46,22 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        // Paparazzi tests require the Paparazzi Gradle plugin to inject system properties
+        // (snapshot dir, resources, etc.) before they can run. Invoking testDebugUnitTest
+        // directly does NOT do this — only the `verifyPaparazziDebug` / `recordPaparazziDebug`
+        // tasks do. So we exclude them from the plain unit test task and wire them into
+        // `check` via the Paparazzi verify task below.
+        unitTests.all {
+            it.exclude("**/AnnotatedStringPaparazziTest.class")
+        }
+    }
+}
+
+// Ensure Paparazzi snapshot verification runs as part of `check` so CI catches visual
+// regressions. Without this, the Paparazzi tests are invisible to standard test runs.
+tasks.named("check") {
+    dependsOn("verifyPaparazziDebug")
 }
 
 dependencies {
