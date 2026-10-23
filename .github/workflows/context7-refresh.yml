@@ -1,0 +1,21 @@
+name: Refresh Context7
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    name: Refresh Context7 docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Context7 refresh
+        run: |
+          curl -fsS -X POST https://context7.com/api/v1/refresh \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.CONTEXT7_API_KEY }}" \
+            -d '{"libraryName": "/${{ github.repository }}"}'
