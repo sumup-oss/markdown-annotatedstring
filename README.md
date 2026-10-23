@@ -20,13 +20,18 @@ This library supports common Markdown syntax, including:
 *   Horizontal rules
 *   Images (rendered as text placeholder)
 
+## Requirements
+
+*   Android `minSdk` 24
+*   Jetpack Compose. Compose Foundation is brought in by this library.
+
 ## Installation
 
-Add the dependency to your module's `build.gradle.kts`:
+Add the dependency to your module's `build.gradle.kts`. `latest.release` resolves to the newest version on Maven Central, the same version shown by the Maven Central badge above.
 
 ```kotlin
 dependencies {
-    implementation("com.sumup.markdown:annotatedstring-generator:0.1.0")
+    implementation("com.sumup.markdown:annotatedstring-generator:latest.release")
 }
 ```
 
@@ -35,19 +40,15 @@ dependencies {
 
 ```groovy
 dependencies {
-    implementation 'com.sumup.markdown:annotatedstring-generator:0.1.0'
+    implementation 'com.sumup.markdown:annotatedstring-generator:latest.release'
 }
 ```
 </details>
 
-<!-- For snapshot versions, add the Maven Central snapshots repository in your settings.gradle.kts:
-     maven("https://central.sonatype.com/repository/maven-snapshots/")
-     and use version "0.1.0-SNAPSHOT" instead. -->
-
 <details>
 <summary>Snapshot versions</summary>
 
-To use a **snapshot** version (e.g., `0.1.0-SNAPSHOT`), add the Maven Central snapshots repository in your `settings.gradle.kts`:
+Stable releases are published to Maven Central. To try an unpublished snapshot (for example `0.1.2-SNAPSHOT`), add the Maven Central snapshots repository in your `settings.gradle.kts`:
 
 ```kotlin
 dependencyResolutionManagement {
@@ -63,16 +64,24 @@ Then use the snapshot version in your dependency:
 
 ```kotlin
 dependencies {
-    implementation("com.sumup.markdown:annotatedstring-generator:0.1.0-SNAPSHOT")
+    implementation("com.sumup.markdown:annotatedstring-generator:0.1.2-SNAPSHOT")
 }
 ```
 </details>
 
 ## Usage
 
+Imports:
+
+```kotlin
+import com.sumup.markdown.annotatedstring.AnnotatedStringGenerator
+import com.sumup.markdown.annotatedstring.CommonMarkFlavourDescriptor
+import org.intellij.markdown.parser.MarkdownParser
+```
+
 ### Basic Usage
 
-Parse your markdown and generate an `AnnotatedString` in three lines:
+Parse your markdown and generate an `AnnotatedString`:
 
 ```kotlin
 val markdown = "Hello **world**! This is *italic* and `code`."
@@ -131,6 +140,8 @@ fun ClickableMarkdownText(markdown: String, modifier: Modifier = Modifier) {
 }
 ```
 
+The [`sample`](sample) module is a small Compose playground for the same API.
+
 ## Building from Source
 
 To build the library from source, clone the repository and run the following command:
@@ -152,6 +163,12 @@ To run the Paparazzi snapshot tests:
 ```bash
 ./gradlew :annotatedstring-generator:verifyPaparazziDebug
 ```
+
+## Project
+
+*   [Changelog](CHANGELOG.md)
+*   [Contributing](CONTRIBUTING.md)
+*   [Security](SECURITY.md)
 
 ## License
 
