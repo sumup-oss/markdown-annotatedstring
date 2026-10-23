@@ -1,0 +1,19 @@
+# Markdown to AnnotatedString Generator
+
+> Android library that converts Markdown into one Jetpack Compose AnnotatedString for a Text.
+
+Use this when Markdown should become one styled string inside a Compose `Text`. The parser is CommonMark through JetBrains intellij-markdown. Links are a `"URL"` string annotation. Images are text placeholders. A `TextView`/`Spannable` library, or a renderer that emits a column of Compose nodes, fits a different layout.
+
+Android `minSdk` 24. Maven coordinates: `com.sumup.markdown:annotatedstring-generator:0.1.1`.
+
+```kotlin
+val markdown = "Hello **world**! This is *italic* and `code`."
+val flavour = CommonMarkFlavourDescriptor()
+val parser = MarkdownParser(flavour)
+val root = parser.buildMarkdownTreeFromString(markdown)
+val annotatedString = AnnotatedStringGenerator(markdown, root, flavour).generateAnnotatedString()
+```
+
+## Docs
+
+- [README](https://github.com/sumup-oss/markdown-annotatedstring#readme): install snippets, Compose `Text` sample, and link-click handling

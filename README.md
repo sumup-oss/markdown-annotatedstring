@@ -6,7 +6,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.sumup.markdown/annotatedstring-generator)](https://central.sonatype.com/artifact/com.sumup.markdown/annotatedstring-generator)
 
 
-A lightweight Android library to convert Markdown text into a Jetpack Compose `AnnotatedString`. This allows you to easily render formatted text from Markdown in your Compose UI.
+A lightweight Android library to convert Markdown text into a Jetpack Compose `AnnotatedString`. Use `com.sumup.markdown:annotatedstring-generator` to produce one `AnnotatedString` for a Compose `Text` on Android (`minSdk` 24).
 
 This library is built on top of [JetBrains intellij-markdown](https://github.com/JetBrains/markdown), a multiplatform Markdown processor written in Kotlin.
 
@@ -20,13 +20,22 @@ This library supports common Markdown syntax, including:
 *   Horizontal rules
 *   Images (rendered as text placeholder)
 
+## Requirements
+
+*   Android `minSdk` 24
+*   Jetpack Compose. Compose Foundation is brought in by this library.
+
+## When to use this
+
+Use this library when Markdown should become one styled string inside a Compose `Text`. The parser is CommonMark through [JetBrains intellij-markdown](https://github.com/JetBrains/markdown). Links are a `"URL"` string annotation. Images are text placeholders. A `TextView`/`Spannable` library, or a renderer that emits a column of Compose nodes, fits a different layout.
+
 ## Installation
 
-Add the dependency to your module's `build.gradle.kts`:
+Add the dependency to your module's `build.gradle.kts`. The Maven Central badge above shows the latest published version. This snippet uses `0.1.1`.
 
 ```kotlin
 dependencies {
-    implementation("com.sumup.markdown:annotatedstring-generator:0.1.0")
+    implementation("com.sumup.markdown:annotatedstring-generator:0.1.1")
 }
 ```
 
@@ -35,19 +44,15 @@ dependencies {
 
 ```groovy
 dependencies {
-    implementation 'com.sumup.markdown:annotatedstring-generator:0.1.0'
+    implementation 'com.sumup.markdown:annotatedstring-generator:0.1.1'
 }
 ```
 </details>
 
-<!-- For snapshot versions, add the Maven Central snapshots repository in your settings.gradle.kts:
-     maven("https://central.sonatype.com/repository/maven-snapshots/")
-     and use version "0.1.0-SNAPSHOT" instead. -->
-
 <details>
 <summary>Snapshot versions</summary>
 
-To use a **snapshot** version (e.g., `0.1.0-SNAPSHOT`), add the Maven Central snapshots repository in your `settings.gradle.kts`:
+Stable releases are published to Maven Central. To try an unpublished snapshot (for example `0.1.2-SNAPSHOT`), add the Maven Central snapshots repository in your `settings.gradle.kts`:
 
 ```kotlin
 dependencyResolutionManagement {
@@ -63,16 +68,24 @@ Then use the snapshot version in your dependency:
 
 ```kotlin
 dependencies {
-    implementation("com.sumup.markdown:annotatedstring-generator:0.1.0-SNAPSHOT")
+    implementation("com.sumup.markdown:annotatedstring-generator:0.1.2-SNAPSHOT")
 }
 ```
 </details>
 
 ## Usage
 
+Imports:
+
+```kotlin
+import com.sumup.markdown.annotatedstring.AnnotatedStringGenerator
+import com.sumup.markdown.annotatedstring.CommonMarkFlavourDescriptor
+import org.intellij.markdown.parser.MarkdownParser
+```
+
 ### Basic Usage
 
-Parse your markdown and generate an `AnnotatedString` in three lines:
+Parse your markdown and generate an `AnnotatedString`:
 
 ```kotlin
 val markdown = "Hello **world**! This is *italic* and `code`."
@@ -131,6 +144,8 @@ fun ClickableMarkdownText(markdown: String, modifier: Modifier = Modifier) {
 }
 ```
 
+The [`sample`](sample) module is a small Compose playground for the same API.
+
 ## Building from Source
 
 To build the library from source, clone the repository and run the following command:
@@ -152,6 +167,12 @@ To run the Paparazzi snapshot tests:
 ```bash
 ./gradlew :annotatedstring-generator:verifyPaparazziDebug
 ```
+
+## Project
+
+*   [Changelog](CHANGELOG.md)
+*   [Contributing](CONTRIBUTING.md)
+*   [Security](SECURITY.md)
 
 ## License
 
