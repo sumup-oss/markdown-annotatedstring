@@ -1,4 +1,18 @@
 {
+  "$schema": "https://context7.com/schema/context7.json",
   "url": "https://context7.com/sumup-oss/markdown-annotatedstring",
-  "public_key": "pk_O90Fl2BsRFDaLDD9XYqQi"
+  "public_key": "pk_O90Fl2BsRFDaLDD9XYqQi",
+  "projectTitle": "Markdown to AnnotatedString Generator",
+  "description": "Lightweight Android library that converts Markdown into one Jetpack Compose AnnotatedString for a Text. minSdk 24.",
+  "excludeFiles": [
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md"
+  ],
+  "rules": [
+    "Depend on com.sumup.markdown:annotatedstring-generator:0.1.1.",
+    "Render the result as one AnnotatedString inside a Compose Text.",
+    "Read link targets from the URL string annotation."
+  ]
 }
