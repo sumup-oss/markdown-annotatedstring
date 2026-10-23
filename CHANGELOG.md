@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
+
+## [0.1.1] - 2026-06-18
+### Fixed
+- Fixed exact line breaking in Markdown parser.
+- Fixed quote chevron rendering.
+- Fixed paparazzi tests configuration and missing images.
+
+## [0.1.0] - 2026-05-22
 ### Added
 - Initial implementation of `AnnotatedStringGenerator` to convert Markdown AST into Compose `AnnotatedString`.
 - Support for bold, italic, headers, block quotes, ordered/unordered lists, links, code blocks, inline code, horizontal rules, and image placeholders.
