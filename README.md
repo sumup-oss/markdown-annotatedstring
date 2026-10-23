@@ -6,7 +6,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.sumup.markdown/annotatedstring-generator)](https://central.sonatype.com/artifact/com.sumup.markdown/annotatedstring-generator)
 
 
-A lightweight Android library to convert Markdown text into a Jetpack Compose `AnnotatedString`. This allows you to easily render formatted text from Markdown in your Compose UI.
+A lightweight Android library to convert Markdown text into a Jetpack Compose `AnnotatedString`. Use `com.sumup.markdown:annotatedstring-generator` to produce one `AnnotatedString` for a Compose `Text` on Android (`minSdk` 24).
 
 This library is built on top of [JetBrains intellij-markdown](https://github.com/JetBrains/markdown), a multiplatform Markdown processor written in Kotlin.
 
@@ -25,13 +25,17 @@ This library supports common Markdown syntax, including:
 *   Android `minSdk` 24
 *   Jetpack Compose. Compose Foundation is brought in by this library.
 
+## When to use this
+
+Use this library when Markdown should become one styled string inside a Compose `Text`. The parser is CommonMark through [JetBrains intellij-markdown](https://github.com/JetBrains/markdown). Links are a `"URL"` string annotation. Images are text placeholders. A `TextView`/`Spannable` library, or a renderer that emits a column of Compose nodes, fits a different layout.
+
 ## Installation
 
-Add the dependency to your module's `build.gradle.kts`. `latest.release` resolves to the newest version on Maven Central, the same version shown by the Maven Central badge above.
+Add the dependency to your module's `build.gradle.kts`. The Maven Central badge above shows the latest published version. This snippet uses `0.1.1`.
 
 ```kotlin
 dependencies {
-    implementation("com.sumup.markdown:annotatedstring-generator:latest.release")
+    implementation("com.sumup.markdown:annotatedstring-generator:0.1.1")
 }
 ```
 
@@ -40,7 +44,7 @@ dependencies {
 
 ```groovy
 dependencies {
-    implementation 'com.sumup.markdown:annotatedstring-generator:latest.release'
+    implementation 'com.sumup.markdown:annotatedstring-generator:0.1.1'
 }
 ```
 </details>
